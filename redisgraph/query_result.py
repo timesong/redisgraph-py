@@ -15,6 +15,7 @@ class ResultSetScalarTypes(object):
     PROPERTY_INTEGER = 3
     PROPERTY_BOOLEAN = 4
     PROPERTY_DOUBLE = 5
+    PROPERTY_ERROR = 6
 
 class QueryResult(object):
     LABELS_ADDED = 'Labels added'
@@ -138,6 +139,9 @@ class QueryResult(object):
 
         elif scalar_type == ResultSetScalarTypes.PROPERTY_DOUBLE:
             scalar = float(value)
+
+        elif scalar_type == ResultSetScalarTypes.PROPERTY_ERROR:
+            raise value
 
         elif scalar_type == ResultSetScalarTypes.PROPERTY_UNKNOWN:
             print("Unknown scalar type\n")
