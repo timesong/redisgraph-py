@@ -1,6 +1,7 @@
 from .node import Node
 from .edge import Edge
 from prettytable import PrettyTable
+from redis import ResponseError
 
 class ResultSetColumnTypes(object):
     COLUMN_UNKNOWN = 0
@@ -15,7 +16,6 @@ class ResultSetScalarTypes(object):
     PROPERTY_INTEGER = 3
     PROPERTY_BOOLEAN = 4
     PROPERTY_DOUBLE = 5
-    PROPERTY_ERROR = 6
 
 class QueryResult(object):
     LABELS_ADDED = 'Labels added'
@@ -30,6 +30,10 @@ class QueryResult(object):
         self.graph = graph
         self.header = []
         self.result_set = []
+
+        # If we encountered a run-time error, the last response element will be an exception.
+        if isinstance(response[-1], ResponseError):
+            raise response[-1]
 
         if len(response) is 1:
             self.parse_statistics(response[0])
@@ -139,9 +143,6 @@ class QueryResult(object):
 
         elif scalar_type == ResultSetScalarTypes.PROPERTY_DOUBLE:
             scalar = float(value)
-
-        elif scalar_type == ResultSetScalarTypes.PROPERTY_ERROR:
-            raise value
 
         elif scalar_type == ResultSetScalarTypes.PROPERTY_UNKNOWN:
             print("Unknown scalar type\n")
